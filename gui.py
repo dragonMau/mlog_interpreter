@@ -2,6 +2,7 @@ import multiprocessing as mp
 import gui_.structure
 import gui_.editor
 import gui_.console
+import gui_.debugger
 import run
     
 class Executor(run.Executor):
@@ -20,15 +21,17 @@ class Application:
         self.root = gui_.structure.Window()
         self.editor = gui_.editor.Editor(self.root.container1_1)
         self.console = gui_.console.Console(self.root.container1_2)
+        self.debugger = gui_.debugger.Debugger(self.root.container2)
         
         self.manager = mp.Manager()
         self.executor = mp.Value("H", 0)
         self.executor_mem = self.manager.dict()
         self.executor_out = self.manager.dict()
         self.executor_lock = mp.Lock()
-        self.p: mp.Process = None
+        self.p: mp.Process
         
         self.root.bind('<<run_code>>', self.run_code)
+        self.root.after(100, self.root.loaded)
 
     @staticmethod
     def loop_executor(lock, code, mem, alive, out):
@@ -51,23 +54,23 @@ class Application:
         alive.value = 2
 
     def stop_executor(self):
-        self.executor.value = 0
+        self.executor.value = 0 # type: ignore
         
     def run_code(self, *_):
-        if self.executor.value: return
+        if self.executor.value: return # type: ignore
         code = self.editor.code.text.get("1.0", "end")
         self.executor_nodes = {
-            tab.terminal._name: tab.terminal.out for tab in self.console.tabs_frame.winfo_children()
-            if "out" in dir(tab.terminal)
+            tab.terminal._name: tab.terminal.out for tab in self.console.tabs_frame.winfo_children() # type: ignore
+            if "out" in dir(tab.terminal) # type: ignore
         }
         self.executor_out.clear()
-        self.executor.value = 0
+        self.executor.value = 0 # type: ignore
         self.p = mp.Process(target=self.loop_executor, args=(self.executor_lock, code, self.executor_mem, self.executor, self.executor_out))
         self.p.start()
                 
     def every_frame(self):
         self.executor_lock.acquire()
-        if self.executor.value:
+        if self.executor.value: # type: ignore
             pointer = self.executor_mem.get("@counter", 0)
             self.editor.code.highlighted_lines = {pointer: (">", "#0e0")}
             for k, v in self.executor_out.items():
@@ -75,7 +78,7 @@ class Application:
                     while v:
                         self.executor_nodes[k].put(v.pop(0))
             self.executor_out.clear()
-            if self.executor.value == 2:
+            if self.executor.value == 2: # type: ignore
                 self.stop_executor()
         self.executor_lock.release()
         self.root.after(30, self.every_frame)

@@ -33,7 +33,7 @@ class Editor:
         self.code.pack(side="top", fill="both", expand=True)
     
     def run_code(self):
-        self.root.event_generate("<<run_code>>", root=".")
+        self.root.event_generate("<<run_code>>", root=".") # type: ignore
             
     def toggle_read(self):
         if self.read_var.get(): self.code.text.config(state="disabled")
@@ -70,5 +70,5 @@ class Editor:
 if __name__ == "__main__":
     r = tk.Tk()
     r.geometry("300x200")
-    Editor(r)
+    Editor(r) #type: ignore
     r.mainloop()

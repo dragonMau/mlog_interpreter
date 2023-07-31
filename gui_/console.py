@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
+class DisplayOut(tk.Frame):
+    def __init__(self, root) -> None:        
+        self.placeholder = tk.Label(root, text="Display\nunimplemented", anchor="center")
+        self.placeholder.pack(fill="both", expand=True)
+        
 class ConsoleOut(scrolledtext.ScrolledText):
     def __init__(self, root):
         super().__init__(root, state="disabled")
@@ -104,7 +109,7 @@ class Tab(tk.Frame):
         
     def _select(self, *_):
         for i in self.root.winfo_children():
-            i._deselect()
+            i._deselect() # type: ignore
 
         self.button.config(relief="sunken")
         self.terminal.show()
@@ -129,7 +134,7 @@ class Console:
         self.tabs_frame.pack(side="left", fill="x", expand=True)
         self.new_button.pack(side="right", fill='none', expand=False)
         
-        self.add_tab()._select()
+        self.add_tab()._select() # type: ignore
     
     
     def add_tab(self):
@@ -140,5 +145,5 @@ if __name__ == "__main__":
     r = tk.Tk()
     r.geometry("300x200")
     r.config(bg="#0f0")
-    Console(r)
+    Console(r) # type: ignore
     r.mainloop()

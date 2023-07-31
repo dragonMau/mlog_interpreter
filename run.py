@@ -17,7 +17,7 @@ class Executor:
         for line in code.replace("\r", "").split("\n"):
             line = line.strip()
             # print(f"line: {line}; ", end="")
-            in_name, *args = line.split() or "  "
+            in_name, *args = line.split() + [" " for _ in range(5)]
             # print(in_name, end="; ")
             # print(*args, sep=", ")
             self.in_set.get(in_name, in_set.NoopI)(self.mem, line, *args)

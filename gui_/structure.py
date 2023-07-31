@@ -22,6 +22,11 @@ class Window(tk.Tk):
         self.title("mlog")
         self.geometry(f"{self.size_x}x{self.size_y}")
         
+        self.loading_label = tk.Label(self, text="Loading...", font=("@Yu Gotic", 40, "bold"), anchor="center", width=self.size_x, height=self.size_y)
+        # self.loading_label.place(x=0, y=0)
+        self.loading_label.pack()
+        self.update()
+        
         self.container1 = tk.Frame(self, width=50, height=90)
         self.container1.pack(side="left", fill="both", expand=True)
         self.container1.pack_propagate(False)
@@ -45,7 +50,10 @@ class Window(tk.Tk):
         self.bind('<Button-1>', self.on_press)
         
         self.un_hold(None)
-        
+    
+    def loaded(self):
+        if self.loading_label.winfo_exists():
+            self.loading_label.destroy()
     
     def on_move(self, event):
         self.size_x = self.winfo_width()
