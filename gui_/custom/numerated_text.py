@@ -75,7 +75,7 @@ class NumeratedText(tk.Frame):
         self.text.bind("<<Change>>", self._on_change)
         self.text.bind("<Configure>", self._on_change)
 
-    def _on_change(self, event):
+    def _on_change(self, *_):
         self.linenumbers.redraw()
         
     @property
@@ -84,7 +84,7 @@ class NumeratedText(tk.Frame):
     @highlighted_lines.setter
     def highlighted_lines(self, value: dict[int, tuple[str, str]]):
         self.linenumbers.highlighted_lines = value
-        self._on_change(None)
+        self._on_change()
         
 if __name__ == "__main__":
     import inflect

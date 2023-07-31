@@ -1,25 +1,27 @@
 import math
 from executor.mem import Ram
-import executor.vars as vars
+from executor.vars import *
 from random import random
 
 class LInstruction:
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         self.repr = repr
         self.args = args
         self.mem = mem
         self.mem.instructions.append(self)
         
     def run(self):
-        counter = self.mem.get_number("@counter")
-        counter += 1
-        counter %= len(self.mem.instructions)
-        self.mem.set_value("@counter", counter)
+        counter = (
+               self.mem.mem.get("@counter", 0)\
+               + 1
+            ) % len(self.mem.instructions)
+        
+        self.mem.mem["@counter"] = counter
 
 class SetI(LInstruction):
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         super().__init__(mem, repr, *args)
-        self.k = str(args[0])
+        self.k = args[0]
         self.v = args[1]
     def run(self):
         super().run()
@@ -54,9 +56,9 @@ class OpI(LInstruction):
         "max":       lambda a, b: max(a, b),
         "min":       lambda a, b: min(a, b),
         "angle":     lambda a, b: math.atan2(a, b) * 180/math.pi,
-        "angleDiff": lambda a, b: vars.angleDiff(a, b),
+        "angleDiff": lambda a, b: angleDiff(a, b),
         "len":       lambda a, b: math.dist((0, 0), (a, b)),
-        "noise":     lambda a, b: vars.raw2d(0, a, b),
+        "noise":     lambda a, b: raw2d(0, a, b),
         "abs":       lambda a, b: abs(a),
         "log":       lambda a, b: math.log(a),
         "log10":     lambda a, b: math.log10(a),
@@ -73,10 +75,10 @@ class OpI(LInstruction):
         "acos": lambda a, b: math.acos(a) * 180/math.pi,
         "atan": lambda a, b: math.atan(a) * 180/math.pi,
     }
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         super().__init__(mem, repr, *args)
         self.op = OpI.ops[str(args[0])]
-        self.dest = str(args[1])
+        self.dest = args[1]
         self.a = args[2]
         self.b = args[3]
         
@@ -90,7 +92,7 @@ class OpI(LInstruction):
         )
 
 class EndI(LInstruction):
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         super().__init__(mem, repr, *args)
     def run(self):
         super().run()
@@ -100,23 +102,22 @@ class NoopI(LInstruction):
     pass
 
 class PrintI(LInstruction):
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         super().__init__(mem, repr, *args)
         self.to_print = args[0]
     def run(self):
         super().run()
-        for l in list(str(self.mem.get_string(self.to_print))):
-            if len(self.mem.text_buffer) >= vars.MAX_TEXT_BUFFER:
-                break
-            self.mem.text_buffer.append(l)
+        self.mem.text_buffer.extend(
+            self.mem.get_string(self.to_print)
+        )
 
 class PrintflushI(LInstruction):
-    def __init__(self, mem: Ram, repr: str, *args) -> None:
+    def __init__(self, mem: Ram, repr: str, *args: str) -> None:
         super().__init__(mem, repr, *args)
-        self.v = str(args[0])
+        self.v = args[0]
     def run(self):
         super().run()
-        out = "".join(self.mem.text_buffer)+"\n"
+        out = "".join(self.mem.text_buffer)
         self.mem.text_buffer.clear()
         return ("text", out, self.v)
 

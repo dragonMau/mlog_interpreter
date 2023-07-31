@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-import custom
+try:
+    import custom
+except ModuleNotFoundError:
+    import gui_.custom as custom
+    import gui
 
 class Editor:
     def __init__(self, root: tk.Frame) -> None:
@@ -14,6 +18,8 @@ class Editor:
         self.open_button = tk.Button(self.file_list, text="open", command=self.open_file, borderwidth=0, background="#F1F3F9", activebackground="#F1F3F9")
         self.save_button = tk.Button(self.file_list, text="save as", command=self.save_file, borderwidth=0, background="#F1F3F9", activebackground="#F1F3F9")
         
+        self.run_button =tk.Button(self.menu_frame, text="Run", command=self.run_code, borderwidth=0)
+        
         self.read_var = tk.BooleanVar(value=True)
         self.read_button = ttk.Checkbutton(self.menu_frame, text="Read only", variable=self.read_var, command=self.toggle_read)
         
@@ -22,9 +28,15 @@ class Editor:
         
         self.menu_frame.pack(side="top", fill="x", expand=False)
         self.file_button.pack(side="left", padx=(10, 5))
+        self.run_button.pack(side="left", padx=0)
         self.read_button.pack(side="right")
         self.code.pack(side="top", fill="both", expand=True)
     
+    def run_code(self):
+        # print(*(locals().get()), sep="\n")
+        # locals().get("gen_event", print)("<<run_code>>", 0) # should work when imported by gui.py
+        gui.gen_event(self.root, "<<run_code>>")
+            
     def toggle_read(self):
         if self.read_var.get(): self.code.text.config(state="disabled")
         else: self.code.text.config(state="normal")

@@ -6,10 +6,42 @@ class ConsoleOut(scrolledtext.ScrolledText):
     def __init__(self, root):
         super().__init__(root, state="disabled")
         self.pack(side="top", expand=True, fill="both")
-    def put(self, *text, sep:str=" ", end:str="\n"):
+        self.buffer = []
+        self._update_cd = False
+    def _print(self, text):
         self.config(state="normal")
-        self.insert("end", sep.join(map(str, text))+end)
+        scroll = self.bbox("end-1c")
+        self.insert("end", text)
+        if scroll: self.see("end")
         self.config(state="disabled")
+    def put(self, *text, sep:str=" ", end:str="\n"):
+        self.buffer.append(sep.join(map(str, text))+end)
+        if not self._update_cd:
+            self._update_cd = True
+            self.after(30, self._update)
+    def _update(self) -> None:
+        if self.buffer:
+            text = "".join(self.buffer)
+            self.buffer.clear()
+            self._print(text)
+        self._update_cd = False
+        
+class MessageOut(ConsoleOut):
+    def put(self, *text, sep: str = " ", end: str = "\n"):
+        self.buffer = sep.join(map(str, text))+end
+        if not self._update_cd:
+            self._update_cd = True
+            self.after(30, self._update)
+    def _print(self, text):
+        self.config(state="normal")
+        self.delete(1.0, tk.END)
+        self.insert("end", text)
+        self.config(state="disabled")
+    def _update(self) -> None:
+        if self.buffer:
+            self._print(self.buffer)
+            self.buffer = ""
+        self._update_cd = False
     
 class Terminal(tk.Frame):
     def __init__(self, root, name):
