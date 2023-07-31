@@ -33,9 +33,7 @@ class Editor:
         self.code.pack(side="top", fill="both", expand=True)
     
     def run_code(self):
-        # print(*(locals().get()), sep="\n")
-        # locals().get("gen_event", print)("<<run_code>>", 0) # should work when imported by gui.py
-        gui.gen_event(self.root, "<<run_code>>")
+        self.root.event_generate("<<run_code>>", root=".")
             
     def toggle_read(self):
         if self.read_var.get(): self.code.text.config(state="disabled")
