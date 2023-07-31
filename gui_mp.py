@@ -54,8 +54,6 @@ class Application:
             if "out" in dir(tab.terminal)
         }
         self.executor_out.clear()
-        for k in self.executor_nodes:
-            self.executor_out[k] = ""
         self.executor.value = 0
         p = mp.Process(target=self.loop_executor, args=(code, self.executor_mem, self.executor, self.executor_out))
         p.start()
@@ -65,7 +63,9 @@ class Application:
             pointer = self.executor_mem.get("@counter", 0)
             self.editor.code.highlighted_lines = {pointer: (">", "#0e0")}
             for k, v in self.executor_out:
-                self.executor_nodes[k].put(v)
+                if k in self.executor_nodes.keys():
+                    self.executor_nodes[k].put(v)
+            self.executor_out.clear()
             if self.executor.value == 2:
                 self.stop_executor()
         self.root.after(30, self.every_frame)
