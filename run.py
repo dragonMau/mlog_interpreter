@@ -1,8 +1,8 @@
-import in_set
-import mem
+import executor.in_set as in_set
+import executor.mem as mem
 
 class Executor:
-    def __init__(self, source: str) -> None:
+    def __init__(self, source="", code="") -> None:
         self.in_set = {}
         for i in dir(in_set):
             if i.endswith("I"):
@@ -10,21 +10,30 @@ class Executor:
         # print(self.in_set)
         # print("------------------")
         self.mem = mem.Ram()
-        with open(f"{source}", "r") as f:
-            # i = 0
-            for line in f.readlines():
-                line = line.strip()
-                # print(f"line: {line}; ", end="")
-                in_name, *args = (*line.split(), *('0',)*4)
-                # print(in_name, end="; ")
-                # print(*args, sep=", ")
-                self.in_set.get(in_name, in_set.NoopI)(self.mem, line, *args)
-                # input(f"{i}: {self.mem.instructions[-1]}\n")
-                # i += 1
+        if not code:
+            with open(f"{source}", "r") as f:
+                code = f.read()
+                
+        for line in code.replace("\r", "").split("\n"):
+            line = line.strip()
+            # print(f"line: {line}; ", end="")
+            in_name, *args = (*line.split(), *('0',)*4)
+            # print(in_name, end="; ")
+            # print(*args, sep=", ")
+            self.in_set.get(in_name, in_set.NoopI)(self.mem, line, *args)
+            # input(f"{i}: {self.mem.instructions[-1]}\n")
+            # i += 1
+            
+    def _print(self, out):
+        out_type, out_cont, out_dest = out
+        if out_type == "text":
+            print(f"{out_dest}:\n{out_cont}")
+    
     def step(self):
-        self.mem.instructions[int(
+        out = self.mem.instructions[int(
             self.mem.get_number("@counter")
         )].run()
+        self._print(out if out else ("none", "", ""))
         
     def run(self, debug=False):
         for _ in range(10_000):
@@ -39,6 +48,6 @@ class Executor:
                 break
         print("\n[Program finished]")
         
-
-# process = Executor(source="../amogus_test.mlog")
-# process.run(debug=False)
+if __name__ == "__main__":
+    process = Executor(source="../amogus_test.mlog")
+    process.run(debug=False)

@@ -1,6 +1,6 @@
 import math
-from mem import Ram
-import vars
+from executor.mem import Ram
+import executor.vars as vars
 from random import random
 
 class LInstruction:
@@ -111,10 +111,14 @@ class PrintI(LInstruction):
             self.mem.text_buffer.append(l)
 
 class PrintflushI(LInstruction):
+    def __init__(self, mem: Ram, repr: str, *args) -> None:
+        super().__init__(mem, repr, *args)
+        self.v = str(args[0])
     def run(self):
         super().run()
-        print(*self.mem.text_buffer, sep="")
+        out = "".join(self.mem.text_buffer)+"\n"
         self.mem.text_buffer.clear()
+        return ("text", out, self.v)
 
 class JumpI(LInstruction): 
     conditions = {**{k: v for k, v in OpI.ops.items() if k in [

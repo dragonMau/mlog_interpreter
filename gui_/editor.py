@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import scrolledtext
 from tkinter import filedialog
 from tkinter import ttk
 import custom
@@ -57,3 +56,9 @@ class Editor:
             with open(file_path, "w") as file:
                 file.write(content)
         self.toggle_file_list(False)
+
+if __name__ == "__main__":
+    r = tk.Tk()
+    r.geometry("300x200")
+    Editor(r)
+    r.mainloop()

@@ -1,5 +1,5 @@
-from vars import *
-import vars
+from executor.vars import *
+import executor.vars as vars
 import math
     
 class Ram:

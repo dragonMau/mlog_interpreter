@@ -18,7 +18,7 @@ class Window(tk.Tk):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.iconbitmap("./gui/assets/icon.ico")
+        self.iconbitmap("./assets/icon.ico")
         self.title("mlog")
         self.geometry(f"{self.size_x}x{self.size_y}")
         
@@ -26,16 +26,16 @@ class Window(tk.Tk):
         self.container1.pack(side="left", fill="both", expand=True)
         self.container1.pack_propagate(False)
         
-        self.container1_1 = tk.Frame(self.container1, bg='red', width=self.c1_1_size_x, height=self.c1_1_size_y)
+        self.container1_1 = tk.Frame(self.container1, width=self.c1_1_size_x, height=self.c1_1_size_y, bg="black", padx=1, pady=1)
         self.container1_1.pack(side="top", fill="both", expand=True)
         self.container1_1.pack_propagate(False)
         
         
-        self.container1_2 = tk.Frame(self.container1, bg='green', width=50, height=50)
+        self.container1_2 = tk.Frame(self.container1, width=50, height=50, bg="black", padx=1, pady=1)
         self.container1_2.pack(side="top", fill="both", expand=True)
         self.container1_2.pack_propagate(False)
         
-        self.container2 = tk.Frame(self, bg='blue', width=50, height=90)
+        self.container2 = tk.Frame(self, width=50, height=90, bg='black', padx=1, pady=1)
         self.container2.pack(side="left", fill="both", expand=True)
         self.container2.pack_propagate(False)
         
